@@ -11,8 +11,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # १. Java इन्स्टॉल करणे
-    - uses: actions/setup-java@v4
+    # १. Java इन्स्टॉल करणे (v5 अपडेट केला आहे)
+    - uses: actions/setup-java@v5
       with:
         distribution: 'zulu'
         java-version: '17'
@@ -29,7 +29,7 @@ jobs:
     # ४. APK फाईल बिल्ड करणे
     - run: flutter build apk --release
 
-    # ५. तयार झालेली APK फाईल डाऊनलोडसाठी उपलब्ध करणे (v4)
+    # ५. तयार झालेली APK फाईल डाऊनलोडसाठी उपलब्ध करणे
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
