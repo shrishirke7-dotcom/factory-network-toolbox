@@ -9,27 +9,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout Code
+      uses: actions/checkout@v4
 
-    # १. Java इन्स्टॉल करणे
-    - uses: actions/setup-java@v4
-      with:
-        distribution: 'zulu'
-        java-version: '17'
-
-    # २. थेट कमांड्सद्वारे Flutter SDK डाऊनलोड करणे (कोणताही प्लग-इन एरर येणार नाही)
-    - name: Clone Flutter SDK
+    # थेट उबंटू सर्व्हरवर Java आणि Git द्वारे Flutter इन्स्टॉल करणे (कोणताही थर्ड-पार्टी प्लग-इन एरर नाही)
+    - name: Install Java and Flutter
       run: |
+        sudo apt-get update
+        sudo apt-get install -y openjdk-17-jdk git
         git clone https://github.com/flutter/flutter.git -b stable --depth 1 _flutter
         echo "$GITHUB_WORKSPACE/_flutter/bin" >> $GITHUB_PATH
 
-    # ३. पॅकेज डाऊनलोड करणे
-    - run: flutter pub get
+    - name: Get Dependencies
+      run: flutter pub get
 
-    # ४. APK फाईल बिल्ड करणे
-    - run: flutter build apk --release
+    - name: Build APK Release
+      run: flutter build apk --release
 
-    # ५. तयार झालेली APK फाईल डाऊनलोडसाठी उपलब्ध करणे
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
