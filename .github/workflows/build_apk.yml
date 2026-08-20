@@ -6,22 +6,32 @@ on:
 
 jobs:
   build:
-    name: Build APK
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      # थेट एकाधिकृत आणि स्टेबल Flutter Build टूल वापरणे
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.19.6'
-          channel: 'stable'
+    # १. Java इन्स्टॉल करणे
+    - uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
 
-      - run: flutter pub get
-      - run: flutter build apk --release
+    # २. थेट कमांड्सद्वारे Flutter SDK डाऊनलोड करणे (कोणताही प्लग-इन एरर येणार नाही)
+    - name: Clone Flutter SDK
+      run: |
+        git clone https://github.com/flutter/flutter.git -b stable --depth 1 _flutter
+        echo "$GITHUB_WORKSPACE/_flutter/bin" >> $GITHUB_PATH
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: factory-network-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+    # ३. पॅकेज डाऊनलोड करणे
+    - run: flutter pub get
+
+    # ४. APK फाईल बिल्ड करणे
+    - run: flutter build apk --release
+
+    # ५. तयार झालेली APK फाईल डाऊनलोडसाठी उपलब्ध करणे
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: factory-network-apk
+        path: build/app/outputs/flutter-apk/app-release.apk
