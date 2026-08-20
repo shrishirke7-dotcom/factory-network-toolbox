@@ -11,23 +11,26 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # १. Java इन्स्टॉल करणे (v5 अपडेट केला आहे)
-    - uses: actions/setup-java@v5
+    # १. Java इन्स्टॉल करणे
+    - uses: actions/setup-java@v4
       with:
         distribution: 'zulu'
         java-version: '17'
 
-    # २. Flutter SDK सेट करणे
-    - uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.19.x'
-        channel: 'stable'
+    # २. थेट Git द्वारे Flutter SDK डाऊनलोड आणि इन्स्टॉल करणे (कोणताही एरर येणार नाही)
+    - name: Install Flutter via Git
+      run: |
+        git clone https://github.com/flutter/flutter.git -b stable --depth 1 _flutter
+        echo "$GITHUB_WORKSPACE/_flutter/bin" >> $GITHUB_PATH
+        flutter --version
 
     # ३. पॅकेज डाऊनलोड करणे
-    - run: flutter pub get
+    - name: Get Dependencies
+      run: flutter pub get
 
     # ४. APK फाईल बिल्ड करणे
-    - run: flutter build apk --release
+    - name: Build APK Release
+      run: flutter build apk --release
 
     # ५. तयार झालेली APK फाईल डाऊनलोडसाठी उपलब्ध करणे
     - name: Upload APK
